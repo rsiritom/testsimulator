@@ -48,8 +48,8 @@ export default function SelectExamPage() {
   const handleStartPractice = () => {
     if (localSelection) {
       selectExam(localSelection);
-      // Navigate to the correct exam page based on the original logic
-      router.push(localSelection === "pmp" ? "/pmp" : "/fce");
+      // Navegar siempre a "https://testsimulator-ebon.vercel.app/"
+      router.push("https://testsimulator-ebon.vercel.app/");
     }
     setOpenModal(false);
   };
