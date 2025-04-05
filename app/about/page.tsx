@@ -32,7 +32,7 @@ export default function AboutPage() {
       {mounted && <BackButton />}
       <Box sx={{ maxWidth: 1000, mx: "auto", width: "100%" }}>
         <Typography variant="h4" component="h2" gutterBottom align="center" sx={{ mb: 4 }}>
-          About PMP Simulator
+          About TEstSimulator
         </Typography>
 
         <Card sx={{ mb: 4 }}>
