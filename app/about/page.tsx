@@ -41,20 +41,20 @@ export default function AboutPage() {
               Project Overview
             </Typography>
             <Typography variant="body1" paragraph>
-              Testsimulator is a web application designed to help users prepare for a variety of language and professional certification exams. 
-              It offers a realistic testing environment with practice questions tailored to each exam's format and subject areas. 
-              The simulator provides an effective way to assess your knowledge and build confidence.
+              PMP Simulator is a web application designed to help professionals prepare for the Project Management
+              Professional (PMP)® certification exam. The simulator provides a realistic test environment with practice
+              questions covering various knowledge areas of project management.
             </Typography>
 
             <Typography variant="body1" paragraph>
               Visit the live application at:{" "}
               <Link
-                href="https://testsimulator-ebon.vercel.app"
+                href="https://v0-pmpsim.vercel.app/"
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={{ display: "inline-flex", alignItems: "center" }}
               >
-                https://testsimulator-ebon.vercel.app/ <LaunchIcon sx={{ ml: 0.5, fontSize: "0.9rem" }} />
+                https://v0-pmpsim.vercel.app/ <LaunchIcon sx={{ ml: 0.5, fontSize: "0.9rem" }} />
               </Link>
             </Typography>
 
@@ -151,20 +151,16 @@ export default function AboutPage() {
               Disclaimer
             </Typography>
             <Typography variant="body2" paragraph>
-              PMP® is a registered mark of the Project Management Institute, Inc.
-              This application is not affiliated with or endorsed by PMI.
-              The questions provided are for practice purposes only and may not reflect the actual PMP® exam content.
-
-              FCE (First Certificate in English) is part of the Cambridge English Qualifications and is a trademark of the University of Cambridge.
-              This application is not affiliated with or endorsed by Cambridge Assessment English.
-              The practice materials included are for educational purposes only and may not match the official exam format or content.
+              PMP® is a registered mark of the Project Management Institute, Inc. This application is not affiliated
+              with or endorsed by PMI. The questions provided are for practice purposes only and may not reflect the
+              actual PMP® exam content.
             </Typography>
 
             <Box sx={{ mt: 4, textAlign: "center" }}>
               <Button
                 variant="contained"
                 color="primary"
-                https://testsimulator-ebon.vercel.app/"
+                href="https://v0-pmpsim.vercel.app/"
                 target="_blank"
                 rel="noopener noreferrer"
                 startIcon={<LaunchIcon />}
