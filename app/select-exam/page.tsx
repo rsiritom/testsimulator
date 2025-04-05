@@ -48,8 +48,8 @@ export default function SelectExamPage() {
   const handleStartPractice = () => {
     if (localSelection) {
       selectExam(localSelection);
-      // Navegar siempre a "https://testsimulator-ebon.vercel.app/"
-      router.push("https://testsimulator-ebon.vercel.app/");
+      // Navegar siempre a "/"
+      router.push("/");
     }
     setOpenModal(false);
   };
