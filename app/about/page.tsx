@@ -54,7 +54,7 @@ export default function AboutPage() {
                 rel="noopener noreferrer"
                 sx={{ display: "inline-flex", alignItems: "center" }}
               >
-                https://v0-pmpsim.vercel.app/ <LaunchIcon sx={{ ml: 0.5, fontSize: "0.9rem" }} />
+                https://testsimulator-ebon.vercel.app/ <LaunchIcon sx={{ ml: 0.5, fontSize: "0.9rem" }} />
               </Link>
             </Typography>
 
