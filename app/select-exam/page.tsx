@@ -13,19 +13,16 @@ import { useExamSelection, type ExamType } from "@/hooks/use-exam-selection"
 interface ExamDetails {
   title: string;
   description: string;
-  pageRoute: string;
 }
 
 const examDetails: Record<ExamType, ExamDetails> = {
   pmp: {
     title: "PMP Exam",
     description: "Project Management Professional certification exam.",
-    pageRoute: "/pmp", // Replace with your actual PMP exam page route
   },
   fce: {
     title: "First Certificate in English",
     description: "Cambridge English: First (FCE) language exam.",
-    pageRoute: "/fce", // Replace with your actual FCE exam page route
   },
 };
 
@@ -51,7 +48,8 @@ export default function SelectExamPage() {
   const handleStartPractice = () => {
     if (localSelection) {
       selectExam(localSelection);
-      router.push(examDetails[localSelection].pageRoute);
+      // Mantener la navegación original basada en la selección del examen
+      router.push(localSelection === "pmp" ? "/pmp" : "/fce");
     }
     setOpenModal(false);
   };
