@@ -164,7 +164,7 @@ export default function AboutPage() {
               <Button
                 variant="contained"
                 color="primary"
-                https://testsimulator-ebon.vercel.app/"
+                href="https://testsimulator-ebon.vercel.app/"
                 target="_blank"
                 rel="noopener noreferrer"
                 startIcon={<LaunchIcon />}
