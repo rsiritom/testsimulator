@@ -48,7 +48,7 @@ export default function SelectExamPage() {
   const handleStartPractice = () => {
     if (localSelection) {
       selectExam(localSelection);
-      // Mantener la navegación original basada en la selección del examen
+      // Navigate to the correct exam page based on the original logic
       router.push(localSelection === "pmp" ? "/pmp" : "/fce");
     }
     setOpenModal(false);
