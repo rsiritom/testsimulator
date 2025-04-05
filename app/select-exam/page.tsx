@@ -7,34 +7,61 @@ import Typography from "@mui/material/Typography"
 import Button from "@mui/material/Button"
 import Card from "@mui/material/Card"
 import CardContent from "@mui/material/CardContent"
+import Modal from "@mui/material/Modal"
 import { useExamSelection, type ExamType } from "@/hooks/use-exam-selection"
 
+interface ExamDetails {
+  title: string;
+  description: string;
+  pageRoute: string;
+}
+
+const examDetails: Record<ExamType, ExamDetails> = {
+  pmp: {
+    title: "PMP Exam",
+    description: "Project Management Professional certification exam.",
+    pageRoute: "/pmp", // Replace with your actual PMP exam page route
+  },
+  fce: {
+    title: "First Certificate in English",
+    description: "Cambridge English: First (FCE) language exam.",
+    pageRoute: "/fce", // Replace with your actual FCE exam page route
+  },
+};
+
 export default function SelectExamPage() {
-  const router = useRouter()
-  const { selectedExam, selectExam } = useExamSelection()
-  const [localSelection, setLocalSelection] = useState<ExamType | null>(null)
-  const [mounted, setMounted] = useState(false)
+  const router = useRouter();
+  const { selectedExam, selectExam } = useExamSelection();
+  const [localSelection, setLocalSelection] = useState<ExamType | null>(null);
+  const [mounted, setMounted] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
 
   // Asegurarse de que el componente esté montado antes de renderizar
   useEffect(() => {
-    setMounted(true)
+    setMounted(true);
     // Inicializar la selección local con la selección guardada
-    setLocalSelection(selectedExam)
-  }, [selectedExam])
+    setLocalSelection(selectedExam);
+  }, [selectedExam]);
 
   const handleExamSelect = (exam: ExamType) => {
-    setLocalSelection(exam)
-  }
+    setLocalSelection(exam);
+    setOpenModal(true);
+  };
 
-  const handleStart = () => {
+  const handleStartPractice = () => {
     if (localSelection) {
-      selectExam(localSelection)
-      router.push("/")
+      selectExam(localSelection);
+      router.push(examDetails[localSelection].pageRoute);
     }
-  }
+    setOpenModal(false);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
 
   if (!mounted) {
-    return null
+    return null;
   }
 
   return (
@@ -157,32 +184,45 @@ export default function SelectExamPage() {
         </Card>
       </Box>
 
-      <Button
-        variant="contained"
-        color="primary"
-        size="large"
-        onClick={handleStart}
-        disabled={!localSelection}
-        sx={{
-          py: 1.5,
-          px: 6,
-          fontSize: "1.25rem",
-          borderRadius: 50,
-          minWidth: 200,
-          boxShadow: 3,
-          background: "linear-gradient(45deg, #0288d1 30%, #00bcd4 90%)",
-          "&:hover": {
-            boxShadow: 5,
-          },
-          "&.Mui-disabled": {
-            background: "#e0e0e0",
-            color: "#9e9e9e",
-          },
-        }}
+      <Modal
+        open={openModal}
+        onClose={handleCloseModal}
+        aria-labelledby="exam-details-modal-title"
+        aria-describedby="exam-details-modal-description"
       >
-        Start
-      </Button>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+            borderRadius: 2,
+          }}
+        >
+          {localSelection && (
+            <>
+              <Typography id="exam-details-modal-title" variant="h6" component="h2">
+                {examDetails[localSelection].title}
+              </Typography>
+              <Typography id="exam-details-modal-description" sx={{ mt: 2 }}>
+                {examDetails[localSelection].description}
+              </Typography>
+              <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
+                <Button onClick={handleCloseModal} sx={{ mr: 2 }}>
+                  Cancel
+                </Button>
+                <Button variant="contained" onClick={handleStartPractice}>
+                  Start Practicing
+                </Button>
+              </Box>
+            </>
+          )}
+        </Box>
+      </Modal>
     </Box>
-  )
+  );
 }
-
