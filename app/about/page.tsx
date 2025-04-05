@@ -41,7 +41,7 @@ export default function AboutPage() {
               Project Overview
             </Typography>
             <Typography variant="body1" paragraph>
-              Testsimulator is a web application designed to help users prepare for a variety of professional certification exams. 
+              Testsimulator is a web application designed to help users prepare for a variety of language and professional certification exams. 
               It offers a realistic testing environment with practice questions tailored to each exam's format and subject areas. 
               The simulator provides an effective way to assess your knowledge and build confidence.
             </Typography>
