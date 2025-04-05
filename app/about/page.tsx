@@ -49,7 +49,7 @@ export default function AboutPage() {
             <Typography variant="body1" paragraph>
               Visit the live application at:{" "}
               <Link
-                href="https://v0-pmpsim.vercel.app/"
+                href="https://testsimulator-ebon.vercel.app"
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={{ display: "inline-flex", alignItems: "center" }}
