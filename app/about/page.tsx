@@ -151,16 +151,20 @@ export default function AboutPage() {
               Disclaimer
             </Typography>
             <Typography variant="body2" paragraph>
-              PMP® is a registered mark of the Project Management Institute, Inc. This application is not affiliated
-              with or endorsed by PMI. The questions provided are for practice purposes only and may not reflect the
-              actual PMP® exam content.
+              PMP® is a registered mark of the Project Management Institute, Inc.
+              This application is not affiliated with or endorsed by PMI.
+              The questions provided are for practice purposes only and may not reflect the actual PMP® exam content.
+
+              FCE (First Certificate in English) is part of the Cambridge English Qualifications and is a trademark of the University of Cambridge.
+              This application is not affiliated with or endorsed by Cambridge Assessment English.
+              The practice materials included are for educational purposes only and may not match the official exam format or content.
             </Typography>
 
             <Box sx={{ mt: 4, textAlign: "center" }}>
               <Button
                 variant="contained"
                 color="primary"
-                href="https://v0-pmpsim.vercel.app/"
+                https://testsimulator-ebon.vercel.app/"
                 target="_blank"
                 rel="noopener noreferrer"
                 startIcon={<LaunchIcon />}
