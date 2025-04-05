@@ -41,9 +41,9 @@ export default function AboutPage() {
               Project Overview
             </Typography>
             <Typography variant="body1" paragraph>
-              PMP Simulator is a web application designed to help professionals prepare for the Project Management
-              Professional (PMP)® certification exam. The simulator provides a realistic test environment with practice
-              questions covering various knowledge areas of project management.
+              Testsimulator is a web application designed to help users prepare for a variety of professional certification exams. 
+              It offers a realistic testing environment with practice questions tailored to each exam's format and subject areas. 
+              The simulator provides an effective way to assess your knowledge and build confidence.
             </Typography>
 
             <Typography variant="body1" paragraph>
