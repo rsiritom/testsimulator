@@ -247,9 +247,9 @@ export function useAchievements() {
       for (const entry of sortedHistory) {
         if (entry.answered && entry.correct) {
           streak++
-        } else {
+         } else {
           break
-         }
+        }
       }
 
       updateDailyQuestionStreak(streak)
@@ -473,7 +473,7 @@ export function useAchievements() {
     // Update the achievement
     setDailyQuestionStreak({
       ...dailyQuestionStreak,
-      currentValue: adjustedValue, 
+      currentValue: adjustedValue,
       currentLevel,
       nextLevel,
       isCompleted: adjustedValue >= 3,
@@ -482,7 +482,7 @@ export function useAchievements() {
     })
   }
 
-  // Modificar la función updateTestScoreThresholdAchievement para evitar actualizaciones innecesarias
+  // Function to update test score threshold achievement - ESPECÍFICO PARA CADA EXAMEN
   const updateTestScoreThresholdAchievement = (count: number) => {
     // Si el contador actual ya es igual al nuevo contador, no hacer nada
     if (testScoreThreshold.currentCount === count) {
@@ -554,4 +554,5 @@ export function useAchievements() {
     newlyUnlocked,
     updateScoreThreshold,
   }
-}
+}      
+ 
