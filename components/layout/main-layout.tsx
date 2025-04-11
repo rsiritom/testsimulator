@@ -18,7 +18,6 @@ import AppBar from "@mui/material/AppBar"
 import Toolbar from "@mui/material/Toolbar"
 import { useTheme } from "@mui/material/styles"
 import { useMobile } from "@/hooks/use-mobile"
-// Add Dialog imports
 import Dialog from "@mui/material/Dialog"
 import DialogActions from "@mui/material/DialogActions"
 import DialogContent from "@mui/material/DialogContent"
@@ -26,8 +25,6 @@ import DialogContentText from "@mui/material/DialogContentText"
 import DialogTitle from "@mui/material/DialogTitle"
 import Button from "@mui/material/Button"
 import { useExamSelection } from "@/hooks/use-exam-selection"
-
-// Añadir las importaciones de iconos necesarios
 import SettingsIcon from "@mui/icons-material/Settings"
 import AssignmentIcon from "@mui/icons-material/Assignment"
 import InfoIcon from "@mui/icons-material/Info"
@@ -36,7 +33,6 @@ import MenuBookIcon from "@mui/icons-material/MenuBook"
 
 const drawerWidth = 250
 
-// Actualizar el array menuItems para incluir iconos
 const menuItems = [
   { text: "Select Exam", path: "/select-exam", icon: <AssignmentIcon /> },
   { text: "Test Setup", path: "/", icon: <SettingsIcon /> },
@@ -45,7 +41,6 @@ const menuItems = [
   { text: "About", path: "/about", icon: <InfoIcon /> },
 ]
 
-// Update the interface to include examInProgress
 interface MainLayoutProps {
   children: ReactNode
   darkMode: boolean
@@ -53,7 +48,6 @@ interface MainLayoutProps {
   examInProgress?: boolean
 }
 
-// Update the component to accept examInProgress
 export default function MainLayout({ children, darkMode, toggleDarkMode, examInProgress = false }: MainLayoutProps) {
   const theme = useTheme()
   const isMobile = useMobile()
@@ -64,30 +58,24 @@ export default function MainLayout({ children, darkMode, toggleDarkMode, examInP
   const [isExamCompleted, setIsExamCompleted] = useState(false)
   const [mounted, setMounted] = useState(false)
   const { selectedExam } = useExamSelection()
+  const [activePath, setActivePath] = useState("")
 
-  // Asegurarse de que el componente esté montado antes de renderizar
   useEffect(() => {
     setMounted(true)
+    setActivePath(window.location.pathname)
   }, [])
 
-  // Check if the exam is completed
   useEffect(() => {
     const checkExamStatus = () => {
       if (typeof window !== "undefined") {
-        // Usar un key específico para cada tipo de examen
         const examKey = `${selectedExam || "pmp"}-exam-completed`
         const examCompleted = localStorage.getItem(examKey) === "true"
         setIsExamCompleted(examCompleted)
       }
     }
 
-    // Check initially
     checkExamStatus()
-
-    // Set up event listener for storage changes
     window.addEventListener("storage", checkExamStatus)
-
-    // Custom event for direct updates
     window.addEventListener("examStatusChanged", checkExamStatus)
 
     return () => {
@@ -100,10 +88,7 @@ export default function MainLayout({ children, darkMode, toggleDarkMode, examInP
     setMobileOpen(!mobileOpen)
   }
 
-  // Modificar la función navigateTo para asegurar que la navegación funcione correctamente
-  // Reemplazar la función handleNavigation completa con esta versión mejorada:
   const handleNavigation = (path: string) => {
-    // Si estamos en medio de un examen y no está completado, mostrar diálogo de confirmación
     if (examInProgress && !isExamCompleted) {
       setPendingNavigation(path)
       setConfirmDialogOpen(true)
@@ -113,22 +98,19 @@ export default function MainLayout({ children, darkMode, toggleDarkMode, examInP
       return
     }
 
-    // Si no estamos en un examen o el examen está completado, navegar directamente
-    // Usar window.location.href para una navegación directa que siempre funcione
     window.location.href = path
+    setActivePath(path)
 
     if (isMobile) {
       setMobileOpen(false)
     }
   }
 
-  // Make sure the handleConfirmNavigation function properly navigates
-  // Reemplazar la función handleConfirmNavigation con esta versión:
   const handleConfirmNavigation = () => {
     setConfirmDialogOpen(false)
     if (pendingNavigation) {
-      // Usar window.location.href para una navegación directa que siempre funcione
       window.location.href = pendingNavigation
+      setActivePath(pendingNavigation)
       setPendingNavigation("")
     }
   }
@@ -138,14 +120,11 @@ export default function MainLayout({ children, darkMode, toggleDarkMode, examInP
     setPendingNavigation("")
   }
 
-  // Determinar el título basado en el examen seleccionado
   const getTitle = () => {
     if (!selectedExam) return "Exam Simulator"
     return selectedExam === "pmp" ? "Simulator PMP" : "Simulator FCE"
   }
 
-  // Modificar la parte del drawer para evitar problemas de accesibilidad
-  // Reemplazar la definición del drawer con esta versión:
   const drawer = (
     <Box role="navigation" aria-label="Main Navigation">
       <Box
@@ -157,11 +136,11 @@ export default function MainLayout({ children, darkMode, toggleDarkMode, examInP
         }}
       >
         {isMobile && (
-          <IconButton onClick={handleDrawerToggle} color="inherit" aria-label="Close menu">
+          <IconButton onClick={handleDrawerToggle} aria-label="Close menu">
             <CloseIcon />
           </IconButton>
         )}
-        <IconButton onClick={toggleDarkMode} color="inherit" aria-label="Toggle dark mode">
+        <IconButton onClick={toggleDarkMode} aria-label="Toggle dark mode">
           {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
         </IconButton>
       </Box>
@@ -171,6 +150,7 @@ export default function MainLayout({ children, darkMode, toggleDarkMode, examInP
             <ListItemButton
               onClick={() => handleNavigation(item.path)}
               sx={{
+                backgroundColor: activePath === item.path ? theme.palette.action.selected : "inherit",
                 "&:hover": {
                   bgcolor: theme.palette.mode === "dark" ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.04)",
                 },
@@ -198,10 +178,8 @@ export default function MainLayout({ children, darkMode, toggleDarkMode, examInP
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh" }}>
-      {/* Add the confirmation dialog */}
       <Dialog
         open={confirmDialogOpen}
-        onClose={handleCancelNavigation}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
@@ -222,7 +200,6 @@ export default function MainLayout({ children, darkMode, toggleDarkMode, examInP
         </DialogActions>
       </Dialog>
 
-      {/* Mobile App Bar */}
       {isMobile && (
         <AppBar
           position="fixed"
@@ -249,8 +226,6 @@ export default function MainLayout({ children, darkMode, toggleDarkMode, examInP
                 {getTitle()}
               </Typography>
             </Box>
-
-            {/* Add theme toggle to mobile app bar */}
             <IconButton onClick={toggleDarkMode} color="inherit" edge="end">
               {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
             </IconButton>
@@ -258,14 +233,13 @@ export default function MainLayout({ children, darkMode, toggleDarkMode, examInP
         </AppBar>
       )}
 
-      {/* Sidebar - Permanent for desktop, temporary for mobile */}
       {isMobile ? (
         <Drawer
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
-            keepMounted: true, // Better open performance on mobile
+            keepMounted: true,
           }}
           sx={{
             "& .MuiDrawer-paper": {
@@ -284,7 +258,7 @@ export default function MainLayout({ children, darkMode, toggleDarkMode, examInP
           sx={{
             width: drawerWidth,
             flexShrink: 0,
-            "& .MuiDrawer-paper": {
+             "& .MuiDrawer-paper": {
               width: drawerWidth,
               boxSizing: "border-box",
               backgroundColor: theme.palette.mode === "dark" ? "#1a1a2e" : "#f0f0f0",
@@ -296,7 +270,6 @@ export default function MainLayout({ children, darkMode, toggleDarkMode, examInP
         </Drawer>
       )}
 
-      {/* Main content */}
       <Box
         component="main"
         sx={{
@@ -327,4 +300,3 @@ export default function MainLayout({ children, darkMode, toggleDarkMode, examInP
     </Box>
   )
 }
-
