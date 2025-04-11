@@ -473,8 +473,8 @@ export function useAchievements() {
     // Update the achievement
     setDailyQuestionStreak({
       ...dailyQuestionStreak,
-      currentValue: adjustedValue 
-	  currentLevel,
+      currentValue: adjustedValue, 
+      currentLevel,
       nextLevel,
       isCompleted: adjustedValue >= 3,
       lastUnlocked: hasLeveledUp ? new Date() : dailyQuestionStreak.lastUnlocked,
