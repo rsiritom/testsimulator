@@ -249,7 +249,7 @@ export function useAchievements() {
           streak++
         } else {
           break
-        }
+         }
       }
 
       updateDailyQuestionStreak(streak)
@@ -401,8 +401,8 @@ export function useAchievements() {
     // Check if we've leveled up
     const hasLeveledUp = currentLevel > appUsageStreak.currentLevel || completingLevel
 
-    // If leveled up, add to newly unlocked
-    if (hasLeveledUp || (adjustedValue === 3 && !appUsageStreak.isCompleted)) {
+    // If leveled up and not already completed, add to newly unlocked
+    if (hasLeveledUp && !appUsageStreak.isCompleted) {
       setNewlyUnlocked((prev) => [...prev, "appUsageStreak"])
 
       // Set flag to expand achievements panel when returning to main page
@@ -456,8 +456,8 @@ export function useAchievements() {
     // Check if we've leveled up
     const hasLeveledUp = currentLevel > dailyQuestionStreak.currentLevel || completingLevel
 
-    // If leveled up, add to newly unlocked
-    if (hasLeveledUp || (adjustedValue === 3 && !dailyQuestionStreak.isCompleted)) {
+    // If leveled up and not already completed, add to newly unlocked
+    if (hasLeveledUp && !dailyQuestionStreak.isCompleted) {
       setNewlyUnlocked((prev) => [...prev, "dailyQuestionStreak"])
 
       // Set flag to expand achievements panel when returning to main page
@@ -473,8 +473,8 @@ export function useAchievements() {
     // Update the achievement
     setDailyQuestionStreak({
       ...dailyQuestionStreak,
-      currentValue: adjustedValue,
-      currentLevel,
+      currentValue: adjustedValue 
+	  currentLevel,
       nextLevel,
       isCompleted: adjustedValue >= 3,
       lastUnlocked: hasLeveledUp ? new Date() : dailyQuestionStreak.lastUnlocked,
@@ -501,7 +501,8 @@ export function useAchievements() {
     // Si alcanzamos el objetivo y ya estaba completado, reiniciar a 1
     const adjustedCount = count > targetCount && testScoreThreshold.isCompleted ? 1 : count
 
-    if (hasLeveledUp || (adjustedCount === 3 && !testScoreThreshold.isCompleted)) {
+    // If leveled up and not already completed, add to newly unlocked
+    if (hasLeveledUp && !testScoreThreshold.isCompleted) {
       setNewlyUnlocked((prev) => [...prev, "testScoreThreshold"])
 
       setTimeout(() => {
