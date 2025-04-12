@@ -28,11 +28,14 @@ export default function AchievementCard({ achievement, isNewlyUnlocked, threshol
   const [showAnimation, setShowAnimation] = useState(isNewlyUnlocked);
 
   useEffect(() => {
-    if (isNewlyUnlocked) {
-      localStorage.setItem(`${achievement.id}-shown`, "true");
+    const shownKey = `${achievement.id}-shown`;
+    const shown = localStorage.getItem(shownKey);
+
+    if (isNewlyUnlocked && shown !== "true") {
+      setShowAnimation(true);
+      localStorage.setItem(shownKey, "true");
     } else {
-      const shown = localStorage.getItem(`${achievement.id}-shown`);
-      setShowAnimation(shown !== "true");
+      setShowAnimation(false);
     }
   }, [isNewlyUnlocked, achievement.id]);
 
