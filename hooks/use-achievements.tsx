@@ -106,7 +106,6 @@ export function useAchievements() {
 
   // State to track newly unlocked achievements for celebration
   const [newlyUnlocked, setNewlyUnlocked] = useState<string[]>([])
-  const [achievementProcessed, setAchievementProcessed] = useState(false)
 
   // Use refs to prevent infinite loops
   const processingTestResult = useRef(false)
@@ -297,7 +296,7 @@ export function useAchievements() {
   // Update test score threshold achievement - ESPECÍFICO PARA CADA EXAMEN
   useEffect(() => {
     // Si el achievement ya está completado para este nivel, no actualizarlo
-    if (achievementProcessed || testScoreThreshold.isCompleted && testScoreThreshold.currentCount >= 3) {
+    if (testScoreThreshold.isCompleted && testScoreThreshold.currentCount >= 3) {
       return
     }
 
@@ -312,9 +311,8 @@ export function useAchievements() {
 
       // Update only the test score threshold achievement
       updateTestScoreThresholdAchievement(testsAboveThreshold)
-      setAchievementProcessed(true);
     }
-  }, [testHistory, scoreThreshold, achievementProcessed])
+  }, [testHistory, scoreThreshold])
 
   // Listen for new test results
   useEffect(() => {
