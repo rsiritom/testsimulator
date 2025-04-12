@@ -10,7 +10,6 @@ import Tooltip from "@mui/material/Tooltip"
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents"
 import { useTheme } from "@mui/material/styles"
 import { type Achievement, ACHIEVEMENT_LEVELS } from "@/hooks/use-achievements"
-import Confetti from "react-confetti"
 import { useMobile } from "@/hooks/use-mobile"
 import Alert from "@mui/material/Alert"
 import { useExamSelection } from "@/hooks/use-exam-selection"
@@ -24,10 +23,9 @@ interface AchievementCardProps {
 export default function AchievementCard({ achievement, isNewlyUnlocked, threshold }: AchievementCardProps) {
   const theme = useTheme()
   const isMobile = useMobile()
-  const [showConfetti, setShowConfetti] = useState(false)
   const { selectedExam } = useExamSelection()
 
-  // Log para depuración
+  // Log for debugging
   useEffect(() => {
     console.log(`[AchievementCard] Rendering ${achievement.id} for ${selectedExam}:`, {
       currentValue: achievement.currentValue,
@@ -36,21 +34,8 @@ export default function AchievementCard({ achievement, isNewlyUnlocked, threshol
     })
   }, [achievement, isNewlyUnlocked, selectedExam])
 
-  // Show confetti when achievement is newly unlocked
-  useEffect(() => {
-    if (isNewlyUnlocked) {
-      setShowConfetti(true)
-      const timer = setTimeout(() => {
-        setShowConfetti(false)
-      }, 5000)
-
-      return () => clearTimeout(timer)
-    }
-  }, [isNewlyUnlocked])
-
   // Calculate progress percentage
   const calculateProgress = () => {
-    // Special case for score threshold achievement
     if (achievement.id === "test-score-threshold") {
       const targetCount = achievement.targetCount || 3
       const currentCount = achievement.currentCount || 0
@@ -71,7 +56,6 @@ export default function AchievementCard({ achievement, isNewlyUnlocked, threshol
 
   // Format the achievement level display
   const formatLevelDisplay = () => {
-    // Special case for score threshold achievement
     if (achievement.id === "test-score-threshold") {
       const targetCount = achievement.targetCount || 3
       const currentCount = achievement.currentCount || 0
@@ -95,12 +79,6 @@ export default function AchievementCard({ achievement, isNewlyUnlocked, threshol
         boxShadow: isNewlyUnlocked ? `0 0 20px ${theme.palette.primary.main}` : undefined,
       }}
     >
-      {showConfetti && (
-        <Box sx={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 10, pointerEvents: "none" }}>
-          <Confetti width={isMobile ? 300 : 400} height={200} recycle={false} numberOfPieces={200} gravity={0.2} />
-        </Box>
-      )}
-
       <CardContent>
         <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
           <EmojiEventsIcon
@@ -152,7 +130,7 @@ export default function AchievementCard({ achievement, isNewlyUnlocked, threshol
           </Typography>
         </Box>
 
-        {/* Mostrar los niveles completados como pequeños círculos */}
+        {/* Show completed levels as small circles */}
         {achievement.completedLevels > 0 && (
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mt: 1 }}>
             {Array.from({ length: Math.min(achievement.completedLevels, 10) }).map((_, index) => (
@@ -179,4 +157,3 @@ export default function AchievementCard({ achievement, isNewlyUnlocked, threshol
     </Card>
   )
 }
-
