@@ -38,19 +38,15 @@ export default function AchievementCard({ achievement, isNewlyUnlocked, threshol
 
   // Show confetti when achievement is newly unlocked
   useEffect(() => {
-    const confettiShownKey = `confetti-shown-${achievement.id}`
-    const confettiShown = localStorage.getItem(confettiShownKey)
-
-    if (isNewlyUnlocked && !confettiShown) {
+    if (isNewlyUnlocked) {
       setShowConfetti(true)
-      localStorage.setItem(confettiShownKey, "true")
       const timer = setTimeout(() => {
         setShowConfetti(false)
       }, 5000)
 
       return () => clearTimeout(timer)
     }
-  }, [isNewlyUnlocked, achievement.id])
+  }, [isNewlyUnlocked])
 
   // Calculate progress percentage
   const calculateProgress = () => {
@@ -115,7 +111,7 @@ export default function AchievementCard({ achievement, isNewlyUnlocked, threshol
             }
             sx={{ mr: 1, fontSize: 28 }}
           />
-          <Typography variant="h6" comp>
+          <Typography variant="h6" component="div">
             {achievement.name}
           </Typography>
         </Box>
@@ -155,7 +151,32 @@ export default function AchievementCard({ achievement, isNewlyUnlocked, threshol
             {formatLevelDisplay()}
           </Typography>
         </Box>
+
+        {/* Mostrar los niveles completados como pequeños círculos */}
+        {achievement.completedLevels > 0 && (
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mt: 1 }}>
+            {Array.from({ length: Math.min(achievement.completedLevels, 10) }).map((_, index) => (
+              <Box
+                key={index}
+                sx={{
+                  width: 16,
+                  height: 16,
+                  borderRadius: "50%",
+                  backgroundColor: theme.palette.primary.main,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Typography variant="caption" sx={{ color: "white", fontSize: "0.6rem" }}>
+                  {index + 1}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        )}
       </CardContent>
     </Card>
   )
 }
+
