@@ -75,13 +75,12 @@ const defaultTestScoreThreshold: Achievement = {
   completedLevels: 0,
 }
 
+// Default threshold value
 const DEFAULT_THRESHOLD = 60
-
 export function useAchievements() {
   const { selectedExam } = useExamSelection()
   const examType = selectedExam || "pmp"
 
-  // Storage hooks
   const [appUsageStreak, setAppUsageStreak] = useLocalStorage(`global-achievement-app-usage`, defaultAppUsageStreak)
   const [dailyQuestionStreak, setDailyQuestionStreak] = useLocalStorage(
     `${examType}-achievement-daily-question`,
@@ -93,22 +92,29 @@ export function useAchievements() {
   )
   const [scoreThreshold, setScoreThreshold] = useLocalStorage(`${examType}-score-threshold`, DEFAULT_THRESHOLD)
 
-  // Get data from other hooks
   const { history: dailyQuestionHistory } = useDailyQuestion()
   const { testHistory } = useTestHistory()
   const [newlyUnlocked, setNewlyUnlocked] = useState<string[]>([])
 
-  // Refs para control de estado
+  // Refs for control
   const processingTestResult = useRef(false)
   const lastProcessedTestId = useRef<string | null>(null)
   const initialLoadDone = useRef(false)
   const previousExamType = useRef<ExamType | null>(null)
   const descriptionUpdated = useRef(false)
   const appUsageCheckedToday = useRef(false)
+  const historyProcessed = useRef(false)
   const descriptionUpdateTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const logRef = useRef(false)
-  const historyProcessed = useRef(false)
-  // Effect para manejar la actualización de la descripción del threshold
+
+  const achievements: AchievementsState = {
+    appUsageStreak,
+    dailyQuestionStreak,
+    testScoreThreshold,
+    scoreThreshold,
+  }
+
+  // Description update effect
   useEffect(() => {
     if (descriptionUpdateTimeoutRef.current) {
       clearTimeout(descriptionUpdateTimeoutRef.current)
@@ -119,7 +125,6 @@ export function useAchievements() {
       if (process.env.NODE_ENV === "development" && !logRef.current) {
         console.log(`Loaded score threshold for ${examType}: ${scoreThreshold}%`)
         logRef.current = true
-
         setTimeout(() => {
           logRef.current = false
         }, 5000)
@@ -158,13 +163,10 @@ export function useAchievements() {
       }
     }
   }, [examType, scoreThreshold])
-
-  // Update app usage streak
+    // App usage streak effect
   useEffect(() => {
     const checkAppUsage = () => {
-      if (appUsageCheckedToday.current) {
-        return
-      }
+      if (appUsageCheckedToday.current) return;
 
       const today = new Date().toISOString().split("T")[0]
       const lastUsageDate = localStorage.getItem(`global-last-usage-date`)
@@ -197,7 +199,7 @@ export function useAchievements() {
     checkAppUsage()
   }, [])
 
-  // Update daily question streak
+  // Daily question streak effect
   useEffect(() => {
     if (dailyQuestionHistory && dailyQuestionHistory.length > 0) {
       const sortedHistory = [...dailyQuestionHistory].sort(
@@ -217,47 +219,35 @@ export function useAchievements() {
     }
   }, [dailyQuestionHistory])
 
-  // Update test score threshold achievement - MODIFICADO
+  // Test score threshold effect
   useEffect(() => {
-    // Si ya procesamos el historial o el logro está completado, no hacer nada
-    if (historyProcessed.current || 
-        (testScoreThreshold.isCompleted && testScoreThreshold.currentCount >= 3)) {
-      return;
+    if (historyProcessed.current) {
+      return
+    }
+
+    if (testScoreThreshold.isCompleted && testScoreThreshold.currentCount >= 3) {
+      return
     }
 
     if (testHistory && testHistory.length > 0) {
-      // Verificar si hay una marca de tiempo de la última actualización
-      const lastUpdateTime = localStorage.getItem(`${examType}-last-threshold-update`);
-      const currentTime = new Date().getTime();
+      const testsAboveThreshold = testHistory.filter((test) => test.score >= scoreThreshold).length
 
-      // Si no hay marca de tiempo o han pasado más de 5 minutos
-      if (!lastUpdateTime || (currentTime - parseInt(lastUpdateTime)) > 300000) {
-        // Count tests that meet the threshold
-        const testsAboveThreshold = testHistory.filter(
-          (test) => test.score >= scoreThreshold
-        ).length;
-
-        // Update only if necessary
-        if (testsAboveThreshold > 0 && testsAboveThreshold !== testScoreThreshold.currentCount) {
-          updateTestScoreThresholdAchievement(testsAboveThreshold);
-          // Guardar la marca de tiempo de la actualización
-          localStorage.setItem(
-            `${examType}-last-threshold-update`, 
-            currentTime.toString()
-          );
-        }
+      if (process.env.NODE_ENV === "development") {
+        console.log(`Tests above threshold (${scoreThreshold}%):`, testsAboveThreshold)
       }
 
-      // Marcar como procesado
-      historyProcessed.current = true;
+      if (testsAboveThreshold > 0) {
+        updateTestScoreThresholdAchievement(testsAboveThreshold)
+      }
+
+      historyProcessed.current = true
     }
   }, [testHistory, scoreThreshold])
-  // Listen for daily question correct event
+
+  // Daily question correct event listener
   useEffect(() => {
     const handleDailyQuestionCorrect = (event) => {
       if (!event.detail) return
-
-      console.log(`[useAchievements] Received dailyQuestionCorrect event:`, event.detail)
 
       const eventExamType = event.detail.examType
       const eventStreak = event.detail.streak
@@ -268,99 +258,78 @@ export function useAchievements() {
       }
 
       if (eventExamType === examType) {
-        console.log(`[useAchievements] Updating ${examType} daily question streak to ${eventStreak}`)
         updateDailyQuestionStreak(eventStreak)
-      } else {
-        console.log(
-          `[useAchievements] Ignoring dailyQuestionCorrect event for ${eventExamType}, current exam is ${examType}`,
-        )
       }
     }
 
     window.addEventListener("dailyQuestionCorrect", handleDailyQuestionCorrect)
-
-    return () => {
-      window.removeEventListener("dailyQuestionCorrect", handleDailyQuestionCorrect)
-    }
+    return () => window.removeEventListener("dailyQuestionCorrect", handleDailyQuestionCorrect)
   }, [examType])
-
-  // Listen for new test results
+    // Test result event listener
   useEffect(() => {
     const handleTestResultSaved = (event) => {
-      if (processingTestResult.current) {
-        return
-      }
+      if (processingTestResult.current) return;
 
-      if (testScoreThreshold.isCompleted && testScoreThreshold.currentCount >= 3) {
-        return
-      }
+      if (testScoreThreshold.isCompleted && testScoreThreshold.currentCount >= 3) return;
 
       if (event.detail && typeof event.detail.score === "number") {
-        const testId = event.detail.id || Date.now().toString()
+        const testId = event.detail.id || Date.now().toString();
 
-        if (lastProcessedTestId.current === testId) {
-          return
-        }
+        if (lastProcessedTestId.current === testId) return;
 
-        console.log("New test result detected:", event.detail)
-        processingTestResult.current = true
-        lastProcessedTestId.current = testId
+        processingTestResult.current = true;
+        lastProcessedTestId.current = testId;
 
         if (event.detail.examType && event.detail.examType !== examType) {
-          console.log(`Test result is for ${event.detail.examType}, current exam is ${examType}, ignoring`)
-          processingTestResult.current = false
-          return
+          processingTestResult.current = false;
+          return;
         }
 
         if (event.detail.score >= scoreThreshold) {
-          console.log(`Test score ${event.detail.score} meets threshold ${scoreThreshold}`)
-          const currentCount = (testScoreThreshold.currentCount || 0) + 1
-          updateTestScoreThresholdAchievement(currentCount)
+          const currentCount = (testScoreThreshold.currentCount || 0) + 1;
+          updateTestScoreThresholdAchievement(currentCount);
         }
 
         setTimeout(() => {
-          processingTestResult.current = false
-        }, 500)
+          processingTestResult.current = false;
+        }, 500);
       }
     }
 
-    window.addEventListener("testResultSaved", handleTestResultSaved)
+    window.addEventListener("testResultSaved", handleTestResultSaved);
+    return () => window.removeEventListener("testResultSaved", handleTestResultSaved);
+  }, [examType, scoreThreshold]);
 
-    return () => {
-      window.removeEventListener("testResultSaved", handleTestResultSaved)
-    }
-  }, [examType, scoreThreshold])
-
-  // Function to update app usage streak
+  // Update functions
   const updateAppUsageStreak = (newValue: number) => {
-    const completingLevel = appUsageStreak.currentValue === 3 && newValue > 3
+    const completingLevel = appUsageStreak.currentValue === 3 && newValue > 3;
     const completedLevels = completingLevel
       ? (appUsageStreak.completedLevels || 0) + 1
-      : appUsageStreak.completedLevels || 0
-    const adjustedValue = completingLevel ? 1 : newValue
+      : appUsageStreak.completedLevels || 0;
+    const adjustedValue = completingLevel ? 1 : newValue;
 
-    let currentLevel = 0
-    let nextLevel = ACHIEVEMENT_LEVELS[0]
+    let currentLevel = 0;
+    let nextLevel = ACHIEVEMENT_LEVELS[0];
 
     for (let i = 0; i < ACHIEVEMENT_LEVELS.length; i++) {
       if (adjustedValue >= ACHIEVEMENT_LEVELS[i]) {
-        currentLevel = i + 1
-        nextLevel = i < ACHIEVEMENT_LEVELS.length - 1 ? ACHIEVEMENT_LEVELS[i + 1] : ACHIEVEMENT_LEVELS[i]
+        currentLevel = i + 1;
+        nextLevel = i < ACHIEVEMENT_LEVELS.length - 1 ? ACHIEVEMENT_LEVELS[i + 1] : ACHIEVEMENT_LEVELS[i];
       } else {
-        break
+        break;
       }
     }
 
-    const hasLeveledUp = currentLevel > appUsageStreak.currentLevel || completingLevel
+    const hasLeveledUp = currentLevel > appUsageStreak.currentLevel || completingLevel;
 
     if (hasLeveledUp || (adjustedValue === 3 && !appUsageStreak.isCompleted)) {
-      setNewlyUnlocked((prev) => [...prev, "appUsageStreak"])
-      localStorage.setItem(`global-achievement-unlocked`, "true")
-      localStorage.setItem(`global-achievement-type-unlocked`, "appUsageStreak")
+      setNewlyUnlocked((prev) => [...prev, "appUsageStreak"]);
+      localStorage.setItem(`global-achievement-unlocked`, "true");
+      localStorage.setItem(`global-achievement-type-unlocked`, "appUsageStreak");
 
       setTimeout(() => {
-        setNewlyUnlocked((prev) => prev.filter((id) => id !== "appUsageStreak"))
-      }, 5000)
+        setNewlyUnlocked((prev) => prev.filter((id) => id !== "appUsageStreak"));
+      }, 5000);
     }
 
     setAppUsageStreak({
@@ -371,38 +340,37 @@ export function useAchievements() {
       isCompleted: adjustedValue >= 3,
       lastUnlocked: hasLeveledUp ? new Date() : appUsageStreak.lastUnlocked,
       completedLevels,
-    })
-  }
-  // Function to update daily question streak
-  const updateDailyQuestionStreak = (newValue: number) => {
-    const completingLevel = dailyQuestionStreak.currentValue === 3 && newValue > 3
+    });
+  };
+    const updateDailyQuestionStreak = (newValue: number) => {
+    const completingLevel = dailyQuestionStreak.currentValue === 3 && newValue > 3;
     const completedLevels = completingLevel
       ? (dailyQuestionStreak.completedLevels || 0) + 1
-      : dailyQuestionStreak.completedLevels || 0
-    const adjustedValue = completingLevel ? 1 : newValue
+      : dailyQuestionStreak.completedLevels || 0;
+    const adjustedValue = completingLevel ? 1 : newValue;
 
-    let currentLevel = 0
-    let nextLevel = ACHIEVEMENT_LEVELS[0]
+    let currentLevel = 0;
+    let nextLevel = ACHIEVEMENT_LEVELS[0];
 
     for (let i = 0; i < ACHIEVEMENT_LEVELS.length; i++) {
       if (adjustedValue >= ACHIEVEMENT_LEVELS[i]) {
-        currentLevel = i + 1
-        nextLevel = i < ACHIEVEMENT_LEVELS.length - 1 ? ACHIEVEMENT_LEVELS[i + 1] : ACHIEVEMENT_LEVELS[i]
+        currentLevel = i + 1;
+        nextLevel = i < ACHIEVEMENT_LEVELS.length - 1 ? ACHIEVEMENT_LEVELS[i + 1] : ACHIEVEMENT_LEVELS[i];
       } else {
-        break
+        break;
       }
     }
 
-    const hasLeveledUp = currentLevel > dailyQuestionStreak.currentLevel || completingLevel
+    const hasLeveledUp = currentLevel > dailyQuestionStreak.currentLevel || completingLevel;
 
     if (hasLeveledUp || (adjustedValue === 3 && !dailyQuestionStreak.isCompleted)) {
-      setNewlyUnlocked((prev) => [...prev, "dailyQuestionStreak"])
-      localStorage.setItem(`${examType}-achievement-unlocked`, "true")
-      localStorage.setItem(`${examType}-achievement-type-unlocked`, "dailyQuestionStreak")
+      setNewlyUnlocked((prev) => [...prev, "dailyQuestionStreak"]);
+      localStorage.setItem(`${examType}-achievement-unlocked`, "true");
+      localStorage.setItem(`${examType}-achievement-type-unlocked`, "dailyQuestionStreak");
 
       setTimeout(() => {
-        setNewlyUnlocked((prev) => prev.filter((id) => id !== "dailyQuestionStreak"))
-      }, 5000)
+        setNewlyUnlocked((prev) => prev.filter((id) => id !== "dailyQuestionStreak"));
+      }, 5000);
     }
 
     setDailyQuestionStreak({
@@ -413,93 +381,34 @@ export function useAchievements() {
       isCompleted: adjustedValue >= 3,
       lastUnlocked: hasLeveledUp ? new Date() : dailyQuestionStreak.lastUnlocked,
       completedLevels,
-    })
-  }
+    });
+  };
 
-  // Function to update test score threshold achievement - MODIFICADO
-  const updateTestScoreThresholdAchievement = (count: number) => {
-    // Verificar si ya existe un logro desbloqueado
-    const achievementUnlocked = localStorage.getItem(`${examType}-achievement-unlocked`);
-    const achievementType = localStorage.getItem(`${examType}-achievement-type-unlocked`);
-    
-    // Si ya hay un logro desbloqueado del mismo tipo, no crear uno nuevo
-    if (achievementUnlocked === "true" && achievementType === "testScoreThreshold") {
-      return;
-    }
+  const updateTestScoreThresholdAchievement = (newCount: number) => {
+    const hasLeveledUp = !testScoreThreshold.isCompleted && newCount >= 3;
 
-    // Si el contador actual ya es igual al nuevo contador, no hacer nada
-    if (testScoreThreshold.currentCount === count) {
-      return;
-    }
-
-    const targetCount = 3;
-    const hasCompleted = count >= targetCount;
-    const hasLeveledUp = hasCompleted && !testScoreThreshold.isCompleted;
-
-    const completedLevels = hasLeveledUp
-      ? (testScoreThreshold.completedLevels || 0) + 1
-      : testScoreThreshold.completedLevels || 0;
-
-    const adjustedCount = count > targetCount && testScoreThreshold.isCompleted ? 1 : count;
-
-    if (hasLeveledUp || (adjustedCount === 3 && !testScoreThreshold.isCompleted)) {
-      const now = new Date();
-      console.log(
-        'Creando en localstorage testScoreThreshold desde use-achievements..', 
-        now.toLocaleDateString(), 
-        now.toLocaleTimeString()
-      );
-
+    if (hasLeveledUp) {
       setNewlyUnlocked((prev) => [...prev, "testScoreThreshold"]);
+      localStorage.setItem(`${examType}-achievement-unlocked`, "true");
+      localStorage.setItem(`${examType}-achievement-type-unlocked`, "testScoreThreshold");
 
       setTimeout(() => {
         setNewlyUnlocked((prev) => prev.filter((id) => id !== "testScoreThreshold"));
       }, 5000);
-
-      localStorage.setItem(`${examType}-achievement-unlocked`, "true");
-      localStorage.setItem(`${examType}-achievement-type-unlocked`, "testScoreThreshold");
     }
 
     setTestScoreThreshold({
       ...testScoreThreshold,
-      currentValue: adjustedCount,
-      currentCount: adjustedCount,
-      currentLevel: hasCompleted ? 1 : 0,
-      isCompleted: hasCompleted,
+      currentValue: newCount,
+      currentCount: newCount,
+      isCompleted: newCount >= 3,
       lastUnlocked: hasLeveledUp ? new Date() : testScoreThreshold.lastUnlocked,
-      completedLevels,
     });
-  }
-
-  // Function to update score threshold
-  const updateScoreThreshold = (newThreshold: number) => {
-    const validThreshold = Math.max(10, Math.min(100, newThreshold));
-
-    if (validThreshold !== scoreThreshold) {
-      setScoreThreshold(validThreshold);
-
-      setTestScoreThreshold({
-        ...defaultTestScoreThreshold,
-        description: `Complete 3 tests with scores above your target threshold (${validThreshold}%)`,
-        completedLevels: testScoreThreshold.completedLevels || 0,
-      });
-
-      historyProcessed.current = false;
-      localStorage.removeItem(`${examType}-last-threshold-update`);
-
-      console.log(`Score threshold changed from ${scoreThreshold}% to ${validThreshold}% for ${examType}`);
-      console.log("Score Threshold achievement reset to 0/3");
-    }
-  }
+  };
 
   return {
-    achievements: {
-      appUsageStreak,
-      dailyQuestionStreak,
-      testScoreThreshold,
-      scoreThreshold,
-    },
+    achievements,
+    setScoreThreshold,
     newlyUnlocked,
-    updateScoreThreshold,
-  }
+  };
 }
