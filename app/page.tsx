@@ -123,6 +123,19 @@ export default function Home() {
         localStorage.removeItem(`${examType}-achievement-unlocked`)
         localStorage.removeItem(`${examType}-achievement-type-unlocked`)
 
+        // Verificar si se han eliminado correctamente
+        const achievementUnlocked = localStorage.getItem(`${examType}-achievement-unlocked`);
+        const achievementTypeUnlocked = localStorage.getItem(`${examType}-achievement-type-unlocked`);
+        
+        if (!achievementUnlocked && !achievementTypeUnlocked) {
+            console.log('Items removed successfully.');
+        } else {
+            console.log('Items not removed:', {
+                achievementUnlocked,
+                achievementTypeUnlocked,
+            });
+        }                     
+        
         // Reset after 10 seconds
         const timer = setTimeout(() => {
           setShouldExpandAchievements(false)
