@@ -505,7 +505,9 @@ export function useAchievements() {
 
     console.log('Entering to if 2');
     if (hasLeveledUp || (adjustedCount === 3 && !testScoreThreshold.isCompleted)) {
-      console.log('Creando en localstorage testScoreThreshold desde use-achievements..'); 
+      const now = new Date();
+      console.log('Creando en localstorage dailyQuestionStreak desde use-achievements..', now.toLocaleDateString(), now.toLocaleTimeString());
+      //console.log('Creando en localstorage testScoreThreshold desde use-achievements..'); 
       setNewlyUnlocked((prev) => [...prev, "testScoreThreshold"])
 
       setTimeout(() => {
