@@ -463,7 +463,7 @@ export function useAchievements() {
       // Set flag to expand achievements panel when returning to main page
       localStorage.setItem(`${examType}-achievement-unlocked`, "true")
       localStorage.setItem(`${examType}-achievement-type-unlocked`, "dailyQuestionStreak")
-      console.log('Creating items from use-achivements in localstorage for ${examType}-achievement-unlocked and  ${examType}-achievement-type-unlocked');
+      console.log('Creating items from use-achivements in localstorage.. ');
       
       // After 5 seconds, remove from newly unlocked
       setTimeout(() => {
