@@ -512,6 +512,7 @@ export function useAchievements() {
       // Set flag to expand achievements panel when returning to main page
       localStorage.setItem(`${examType}-achievement-unlocked`, "true")
       localStorage.setItem(`${examType}-achievement-type-unlocked`, "testScoreThreshold")
+      console.log('Creating items 2 from use-achivements in localstorage.. ');
     }
 
     // Update the achievement
