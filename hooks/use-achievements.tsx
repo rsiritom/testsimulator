@@ -459,8 +459,8 @@ export function useAchievements() {
     console.log('Entering to if...');
     // If leveled up, add to newly unlocked
     if (hasLeveledUp || (adjustedValue === 3 && !dailyQuestionStreak.isCompleted)) {
-      setNewlyUnlocked((prev) => [...prev, "dailyQuestionStreak"])
       console.log('Creando en localstorage desde use-achievements..'); 
+      setNewlyUnlocked((prev) => [...prev, "dailyQuestionStreak"])
       // Set flag to expand achievements panel when returning to main page
       localStorage.setItem(`${examType}-achievement-unlocked`, "true")
       localStorage.setItem(`${examType}-achievement-type-unlocked`, "dailyQuestionStreak")
@@ -505,12 +505,12 @@ export function useAchievements() {
 
     console.log('Entering to if 2');
     if (hasLeveledUp || (adjustedCount === 3 && !testScoreThreshold.isCompleted)) {
+      console.log('Creando en localstorage desde use-achievements..'); 
       setNewlyUnlocked((prev) => [...prev, "testScoreThreshold"])
 
       setTimeout(() => {
         setNewlyUnlocked((prev) => prev.filter((id) => id !== "testScoreThreshold"))
       }, 5000)
-      console.log('Creando en localstorage desde use-achievements..'); 
       // Set flag to expand achievements panel when returning to main page
       localStorage.setItem(`${examType}-achievement-unlocked`, "true")
       localStorage.setItem(`${examType}-achievement-type-unlocked`, "testScoreThreshold")
