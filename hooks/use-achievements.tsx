@@ -19,8 +19,10 @@ export interface Achievement {
   currentLevel: number
   isCompleted: boolean
   lastUnlocked: Date | null
+  // For score threshold achievement
   targetCount?: number
   currentCount?: number
+  // Para seguimiento de niveles completados
   completedLevels?: number
 }
 
@@ -79,6 +81,7 @@ export function useAchievements() {
   const { selectedExam } = useExamSelection()
   const examType = selectedExam || "pmp"
 
+  // Storage hooks
   const [appUsageStreak, setAppUsageStreak] = useLocalStorage(`global-achievement-app-usage`, defaultAppUsageStreak)
   const [dailyQuestionStreak, setDailyQuestionStreak] = useLocalStorage(
     `${examType}-achievement-daily-question`,
@@ -90,6 +93,7 @@ export function useAchievements() {
   )
   const [scoreThreshold, setScoreThreshold] = useLocalStorage(`${examType}-score-threshold`, DEFAULT_THRESHOLD)
 
+  // Get data from other hooks
   const { history: dailyQuestionHistory } = useDailyQuestion()
   const { testHistory } = useTestHistory()
   const [newlyUnlocked, setNewlyUnlocked] = useState<string[]>([])
@@ -104,7 +108,7 @@ export function useAchievements() {
   const descriptionUpdateTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const logRef = useRef(false)
   const historyProcessed = useRef(false)
-
+  // Effect para manejar la actualización de la descripción del threshold
   useEffect(() => {
     if (descriptionUpdateTimeoutRef.current) {
       clearTimeout(descriptionUpdateTimeoutRef.current)
@@ -213,7 +217,6 @@ export function useAchievements() {
     }
   }, [dailyQuestionHistory])
 
-
   // Update test score threshold achievement - MODIFICADO
   useEffect(() => {
     // Si ya procesamos el historial o el logro está completado, no hacer nada
@@ -249,11 +252,12 @@ export function useAchievements() {
       historyProcessed.current = true;
     }
   }, [testHistory, scoreThreshold])
-
   // Listen for daily question correct event
   useEffect(() => {
     const handleDailyQuestionCorrect = (event) => {
       if (!event.detail) return
+
+      console.log(`[useAchievements] Received dailyQuestionCorrect event:`, event.detail)
 
       const eventExamType = event.detail.examType
       const eventStreak = event.detail.streak
@@ -264,7 +268,12 @@ export function useAchievements() {
       }
 
       if (eventExamType === examType) {
+        console.log(`[useAchievements] Updating ${examType} daily question streak to ${eventStreak}`)
         updateDailyQuestionStreak(eventStreak)
+      } else {
+        console.log(
+          `[useAchievements] Ignoring dailyQuestionCorrect event for ${eventExamType}, current exam is ${examType}`,
+        )
       }
     }
 
@@ -293,15 +302,18 @@ export function useAchievements() {
           return
         }
 
+        console.log("New test result detected:", event.detail)
         processingTestResult.current = true
         lastProcessedTestId.current = testId
 
         if (event.detail.examType && event.detail.examType !== examType) {
+          console.log(`Test result is for ${event.detail.examType}, current exam is ${examType}, ignoring`)
           processingTestResult.current = false
           return
         }
 
         if (event.detail.score >= scoreThreshold) {
+          console.log(`Test score ${event.detail.score} meets threshold ${scoreThreshold}`)
           const currentCount = (testScoreThreshold.currentCount || 0) + 1
           updateTestScoreThresholdAchievement(currentCount)
         }
@@ -361,7 +373,6 @@ export function useAchievements() {
       completedLevels,
     })
   }
-
   // Function to update daily question streak
   const updateDailyQuestionStreak = (newValue: number) => {
     const completingLevel = dailyQuestionStreak.currentValue === 3 && newValue > 3
@@ -409,9 +420,10 @@ export function useAchievements() {
   const updateTestScoreThresholdAchievement = (count: number) => {
     // Verificar si ya existe un logro desbloqueado
     const achievementUnlocked = localStorage.getItem(`${examType}-achievement-unlocked`);
+    const achievementType = localStorage.getItem(`${examType}-achievement-type-unlocked`);
     
-    // Si ya hay un logro desbloqueado, no crear uno nuevo
-    if (achievementUnlocked === "true") {
+    // Si ya hay un logro desbloqueado del mismo tipo, no crear uno nuevo
+    if (achievementUnlocked === "true" && achievementType === "testScoreThreshold") {
       return;
     }
 
@@ -424,12 +436,10 @@ export function useAchievements() {
     const hasCompleted = count >= targetCount;
     const hasLeveledUp = hasCompleted && !testScoreThreshold.isCompleted;
 
-    // Si estamos completando un nivel, incrementar el contador de niveles completados
     const completedLevels = hasLeveledUp
       ? (testScoreThreshold.completedLevels || 0) + 1
       : testScoreThreshold.completedLevels || 0;
 
-    // Si alcanzamos el objetivo y ya estaba completado, reiniciar a 1
     const adjustedCount = count > targetCount && testScoreThreshold.isCompleted ? 1 : count;
 
     if (hasLeveledUp || (adjustedCount === 3 && !testScoreThreshold.isCompleted)) {
@@ -463,25 +473,18 @@ export function useAchievements() {
 
   // Function to update score threshold
   const updateScoreThreshold = (newThreshold: number) => {
-    // Ensure threshold is between 10 and 100
     const validThreshold = Math.max(10, Math.min(100, newThreshold));
 
-    // Only update if the threshold has changed
     if (validThreshold !== scoreThreshold) {
-      // Update the threshold
       setScoreThreshold(validThreshold);
 
-      // Reset ONLY the test score threshold achievement
       setTestScoreThreshold({
         ...defaultTestScoreThreshold,
         description: `Complete 3 tests with scores above your target threshold (${validThreshold}%)`,
-        completedLevels: testScoreThreshold.completedLevels || 0, // Mantener los niveles completados
+        completedLevels: testScoreThreshold.completedLevels || 0,
       });
 
-      // Reset el estado de procesamiento del historial
       historyProcessed.current = false;
-
-      // Eliminar la marca de tiempo de la última actualización
       localStorage.removeItem(`${examType}-last-threshold-update`);
 
       console.log(`Score threshold changed from ${scoreThreshold}% to ${validThreshold}% for ${examType}`);
