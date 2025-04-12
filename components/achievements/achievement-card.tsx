@@ -25,6 +25,17 @@ export default function AchievementCard({ achievement, isNewlyUnlocked, threshol
   const isMobile = useMobile();
   const { selectedExam } = useExamSelection();
 
+  const [showAnimation, setShowAnimation] = useState(isNewlyUnlocked);
+
+  useEffect(() => {
+    if (isNewlyUnlocked) {
+      localStorage.setItem(`${achievement.id}-shown`, "true");
+    } else {
+      const shown = localStorage.getItem(`${achievement.id}-shown`);
+      setShowAnimation(shown !== "true");
+    }
+  }, [isNewlyUnlocked, achievement.id]);
+
   // Log for debugging
   useEffect(() => {
     console.log(`[AchievementCard] Rendering ${achievement.id} for ${selectedExam}:`, {
@@ -75,8 +86,8 @@ export default function AchievementCard({ achievement, isNewlyUnlocked, threshol
         position: "relative",
         overflow: "visible",
         transition: "transform 0.3s ease",
-        transform: isNewlyUnlocked ? "scale(1.05)" : "scale(1)",
-        boxShadow: isNewlyUnlocked ? `0 0 20px ${theme.palette.primary.main}` : undefined,
+        transform: showAnimation ? "scale(1.05)" : "scale(1)",
+        boxShadow: showAnimation ? `0 0 20px ${theme.palette.primary.main}` : undefined,
       }}
     >
       <CardContent>
@@ -100,7 +111,7 @@ export default function AchievementCard({ achievement, isNewlyUnlocked, threshol
             : achievement.description}
         </Typography>
 
-        {isNewlyUnlocked && achievement.id === "test-score-threshold" && achievement.isCompleted && (
+        {showAnimation && achievement.id === "test-score-threshold" && achievement.isCompleted && (
           <Alert severity="success" sx={{ mb: 2 }}>
             <Typography variant="body2">
               Congratulations! You've completed 3 tests above your threshold of {threshold}%!
