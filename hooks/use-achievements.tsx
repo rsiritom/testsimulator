@@ -456,6 +456,7 @@ export function useAchievements() {
     // Check if we've leveled up
     const hasLeveledUp = currentLevel > dailyQuestionStreak.currentLevel || completingLevel
 
+    console.log('Entering to if...');
     // If leveled up, add to newly unlocked
     if (hasLeveledUp || (adjustedValue === 3 && !dailyQuestionStreak.isCompleted)) {
       setNewlyUnlocked((prev) => [...prev, "dailyQuestionStreak"])
@@ -502,6 +503,7 @@ export function useAchievements() {
     // Si alcanzamos el objetivo y ya estaba completado, reiniciar a 1
     const adjustedCount = count > targetCount && testScoreThreshold.isCompleted ? 1 : count
 
+    console.log('Entering to if 2');
     if (hasLeveledUp || (adjustedCount === 3 && !testScoreThreshold.isCompleted)) {
       setNewlyUnlocked((prev) => [...prev, "testScoreThreshold"])
 
