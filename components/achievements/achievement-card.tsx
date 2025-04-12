@@ -26,6 +26,7 @@ export default function AchievementCard({ achievement, isNewlyUnlocked, threshol
   const { selectedExam } = useExamSelection();
 
   const [showAnimation, setShowAnimation] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true); // Estado para controlar la visibilidad de la sección
 
   useEffect(() => {
     const shownKey = `${achievement.id}-shown`;
@@ -122,49 +123,53 @@ export default function AchievementCard({ achievement, isNewlyUnlocked, threshol
           </Alert>
         )}
 
-        <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-          <Box sx={{ flexGrow: 1, mr: 1 }}>
-            <Tooltip title={`${Math.round(progress)}% al siguiente nivel`}>
-              <LinearProgress
-                variant="determinate"
-                value={progress}
-                sx={{
-                  height: 8,
-                  borderRadius: 4,
-                  backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
-                  "& .MuiLinearProgress-bar": {
-                    backgroundColor: achievement.isCompleted ? theme.palette.success.main : theme.palette.primary.main,
-                  },
-                }}
-              />
-            </Tooltip>
-          </Box>
-          <Typography variant="body2" color="text.secondary">
-            {formatLevelDisplay()}
-          </Typography>
-        </Box>
-
-        {achievement.completedLevels > 0 && (
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mt: 1 }}>
-            {Array.from({ length: Math.min(achievement.completedLevels, 10) }).map((_, index) => (
-              <Box
-                key={index}
-                sx={{
-                  width: 16,
-                  height: 16,
-                  borderRadius: "50%",
-                  backgroundColor: theme.palette.primary.main,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Typography variant="caption" sx={{ color: "white", fontSize: "0.6rem" }}>
-                  {index + 1}
-                </Typography>
+        {!isCollapsed && (
+          <>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+              <Box sx={{ flexGrow: 1, mr: 1 }}>
+                <Tooltip title={`${Math.round(progress)}% al siguiente nivel`}>
+                  <LinearProgress
+                    variant="determinate"
+                    value={progress}
+                    sx={{
+                      height: 8,
+                      borderRadius: 4,
+                      backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
+                      "& .MuiLinearProgress-bar": {
+                        backgroundColor: achievement.isCompleted ? theme.palette.success.main : theme.palette.primary.main,
+                      },
+                    }}
+                  />
+                </Tooltip>
               </Box>
-            ))}
-          </Box>
+              <Typography variant="body2" color="text.secondary">
+                {formatLevelDisplay()}
+              </Typography>
+            </Box>
+
+            {achievement.completedLevels > 0 && (
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mt: 1 }}>
+                {Array.from({ length: Math.min(achievement.completedLevels, 10) }).map((_, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      width: 16,
+                      height: 16,
+                      borderRadius: "50%",
+                      backgroundColor: theme.palette.primary.main,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Typography variant="caption" sx={{ color: "white", fontSize: "0.6rem" }}>
+                      {index + 1}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+            )}
+          </>
         )}
       </CardContent>
     </Card>
