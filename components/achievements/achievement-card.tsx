@@ -38,15 +38,19 @@ export default function AchievementCard({ achievement, isNewlyUnlocked, threshol
 
   // Show confetti when achievement is newly unlocked
   useEffect(() => {
-    if (isNewlyUnlocked) {
+    const confettiShownKey = `confetti-shown-${achievement.id}`
+    const confettiShown = localStorage.getItem(confettiShownKey)
+
+    if (isNewlyUnlocked && !confettiShown) {
       setShowConfetti(true)
+      localStorage.setItem(confettiShownKey, "true")
       const timer = setTimeout(() => {
         setShowConfetti(false)
       }, 5000)
 
       return () => clearTimeout(timer)
     }
-  }, [isNewlyUnlocked])
+  }, [isNewlyUnlocked, achievement.id])
 
   // Calculate progress percentage
   const calculateProgress = () => {
@@ -111,7 +115,7 @@ export default function AchievementCard({ achievement, isNewlyUnlocked, threshol
             }
             sx={{ mr: 1, fontSize: 28 }}
           />
-          <Typography variant="h6" component="div">
+          <Typography variant="h6" comp>
             {achievement.name}
           </Typography>
         </Box>
@@ -179,4 +183,3 @@ export default function AchievementCard({ achievement, isNewlyUnlocked, threshol
     </Card>
   )
 }
-
