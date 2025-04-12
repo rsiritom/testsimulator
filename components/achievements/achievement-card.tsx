@@ -25,7 +25,7 @@ export default function AchievementCard({ achievement, isNewlyUnlocked, threshol
   const isMobile = useMobile();
   const { selectedExam } = useExamSelection();
 
-  const [showAnimation, setShowAnimation] = useState(isNewlyUnlocked);
+  const [showAnimation, setShowAnimation] = useState(false);
 
   useEffect(() => {
     const shownKey = `${achievement.id}-shown`;
