@@ -1,29 +1,29 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Box from "@mui/material/Box"
-import Card from "@mui/material/Card"
-import CardContent from "@mui/material/CardContent"
-import Typography from "@mui/material/Typography"
-import LinearProgress from "@mui/material/LinearProgress"
-import Tooltip from "@mui/material/Tooltip"
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents"
-import { useTheme } from "@mui/material/styles"
-import { type Achievement, ACHIEVEMENT_LEVELS } from "@/hooks/use-achievements"
-import { useMobile } from "@/hooks/use-mobile"
-import Alert from "@mui/material/Alert"
-import { useExamSelection } from "@/hooks/use-exam-selection"
+import { useState, useEffect } from "react";
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
+import LinearProgress from "@mui/material/LinearProgress";
+import Tooltip from "@mui/material/Tooltip";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import { useTheme } from "@mui/material/styles";
+import { type Achievement, ACHIEVEMENT_LEVELS } from "@/hooks/use-achievements";
+import { useMobile } from "@/hooks/use-mobile";
+import Alert from "@mui/material/Alert";
+import { useExamSelection } from "@/hooks/use-exam-selection";
 
 interface AchievementCardProps {
-  achievement: Achievement
-  isNewlyUnlocked: boolean
-  threshold?: number
+  achievement: Achievement;
+  isNewlyUnlocked: boolean;
+  threshold?: number;
 }
 
 export default function AchievementCard({ achievement, isNewlyUnlocked, threshold }: AchievementCardProps) {
-  const theme = useTheme()
-  const isMobile = useMobile()
-  const { selectedExam } = useExamSelection()
+  const theme = useTheme();
+  const isMobile = useMobile();
+  const { selectedExam } = useExamSelection();
 
   // Log for debugging
   useEffect(() => {
@@ -31,43 +31,43 @@ export default function AchievementCard({ achievement, isNewlyUnlocked, threshol
       currentValue: achievement.currentValue,
       isCompleted: achievement.isCompleted,
       isNewlyUnlocked,
-    })
-  }, [achievement, isNewlyUnlocked, selectedExam])
+    });
+  }, [achievement, isNewlyUnlocked, selectedExam]);
 
   // Calculate progress percentage
   const calculateProgress = () => {
     if (achievement.id === "test-score-threshold") {
-      const targetCount = achievement.targetCount || 3
-      const currentCount = achievement.currentCount || 0
-      return Math.min(100, (currentCount / targetCount) * 100)
+      const targetCount = achievement.targetCount || 3;
+      const currentCount = achievement.currentCount || 0;
+      return Math.min(100, (currentCount / targetCount) * 100);
     }
 
-    if (achievement.isCompleted) return 100
+    if (achievement.isCompleted) return 100;
 
-    const prevLevel = achievement.currentLevel > 0 ? ACHIEVEMENT_LEVELS[achievement.currentLevel - 1] : 0
+    const prevLevel = achievement.currentLevel > 0 ? ACHIEVEMENT_LEVELS[achievement.currentLevel - 1] : 0;
 
-    const progressInCurrentLevel = achievement.currentValue - prevLevel
-    const rangeInCurrentLevel = achievement.nextLevel - prevLevel
+    const progressInCurrentLevel = achievement.currentValue - prevLevel;
+    const rangeInCurrentLevel = achievement.nextLevel - prevLevel;
 
-    return Math.min(100, (progressInCurrentLevel / rangeInCurrentLevel) * 100)
-  }
+    return Math.min(100, (progressInCurrentLevel / rangeInCurrentLevel) * 100);
+  };
 
-  const progress = calculateProgress()
+  const progress = calculateProgress();
 
   // Format the achievement level display
   const formatLevelDisplay = () => {
     if (achievement.id === "test-score-threshold") {
-      const targetCount = achievement.targetCount || 3
-      const currentCount = achievement.currentCount || 0
-      return `${currentCount}/${targetCount}`
+      const targetCount = achievement.targetCount || 3;
+      const currentCount = achievement.currentCount || 0;
+      return `${currentCount}/${targetCount}`;
     }
 
     if (achievement.isCompleted) {
-      return `${achievement.currentValue}/${achievement.nextLevel}`
+      return `${achievement.currentValue}/${achievement.nextLevel}`;
     }
 
-    return `${achievement.currentValue}/${achievement.nextLevel}`
-  }
+    return `${achievement.currentValue}/${achievement.nextLevel}`;
+  };
 
   return (
     <Card
@@ -89,7 +89,7 @@ export default function AchievementCard({ achievement, isNewlyUnlocked, threshol
             }
             sx={{ mr: 1, fontSize: 28 }}
           />
-          <Typography variant="h6" component="div">
+          <Typography variant="h6">
             {achievement.name}
           </Typography>
         </Box>
@@ -130,7 +130,6 @@ export default function AchievementCard({ achievement, isNewlyUnlocked, threshol
           </Typography>
         </Box>
 
-        {/* Show completed levels as small circles */}
         {achievement.completedLevels > 0 && (
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mt: 1 }}>
             {Array.from({ length: Math.min(achievement.completedLevels, 10) }).map((_, index) => (
@@ -155,5 +154,5 @@ export default function AchievementCard({ achievement, isNewlyUnlocked, threshol
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
