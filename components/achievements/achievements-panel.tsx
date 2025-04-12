@@ -60,47 +60,53 @@ export default function AchievementsPanel({
           }}
           onClick={toggleExpanded}
         >
-          <Typography variant="h5" component="div">
-            Achievements
-          </Typography>
-          <Box sx={{ display: "flex", gap: 1 }}>
-            <Tooltip
-              title={achievements.appUsageStreak.isCompleted ? "App Usage Streak Completed" : "App Usage Streak"}
-            >
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <EmojiEventsIcon
-                  color={achievements.appUsageStreak.currentLevel > 0 ? "primary" : "action"}
-                  sx={{ fontSize: 24 }}
-                />
-              </Box>
-            </Tooltip>
-            <Tooltip
-              title={
-                achievements.dailyQuestionStreak.isCompleted
-                  ? "Daily Question Streak Completed"
-                  : "Daily Question Streak"
-              }
-            >
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <EmojiEventsIcon
-                  color={achievements.dailyQuestionStreak.currentLevel > 0 ? "primary" : "action"}
-                  sx={{ fontSize: 24 }}
-                />
-              </Box>
-            </Tooltip>
-            <Tooltip
-              title={achievements.testScoreThreshold.isCompleted ? "Score Threshold Completed" : "Score Threshold"}
-            >
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <EmojiEventsIcon
-                  color={achievements.testScoreThreshold.isCompleted ? "primary" : "action"}
-                  sx={{ fontSize: 24 }}
-                />
-              </Box>
-            </Tooltip>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Typography variant="h5" component="h2">
+              Achievements
+            </Typography>
+            <Box sx={{ display: "flex", gap: 1 }}>
+              <Tooltip
+                title={achievements.appUsageStreak.isCompleted ? "App Usage Streak Completed" : "App Usage Streak"}
+              >
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <EmojiEventsIcon
+                    color={achievements.appUsageStreak.currentLevel > 0 ? "primary" : "action"}
+                    sx={{ fontSize: 24 }}
+                  />
+                </Box>
+              </Tooltip>
+              <Tooltip
+                title={
+                  achievements.dailyQuestionStreak.isCompleted
+                    ? "Daily Question Streak Completed"
+                    : "Daily Question Streak"
+                }
+              >
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <EmojiEventsIcon
+                    color={achievements.dailyQuestionStreak.currentLevel > 0 ? "primary" : "action"}
+                    sx={{ fontSize: 24 }}
+                  />
+                </Box>
+              </Tooltip>
+              <Tooltip
+                title={achievements.testScoreThreshold.isCompleted ? "Score Threshold Completed" : "Score Threshold"}
+              >
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <EmojiEventsIcon
+                    color={achievements.testScoreThreshold.isCompleted ? "primary" : "action"}
+                    sx={{ fontSize: 24 }}
+                  />
+                </Box>
+              </Tooltip>
+            </Box>
           </Box>
           <Button
             endIcon={expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            onClick={(e) => {
+              e.stopPropagation()
+              toggleExpanded()
+            }}
           >
             {expanded ? "Hide" : "Show"}
           </Button>
@@ -138,10 +144,11 @@ export default function AchievementsPanel({
               </Grid>
             </Grid>
 
-            <ScoreThresholdSetting threshold={achievements.scoreThreshold} updateScoreThreshold={updateScoreThreshold} />
+            <ScoreThresholdSetting threshold={achievements.scoreThreshold} onUpdateThreshold={updateScoreThreshold} />
           </Box>
         </Collapse>
       </CardContent>
     </Card>
   )
 }
+
