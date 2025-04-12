@@ -96,33 +96,29 @@ export default function Home() {
   // Check for achievement unlocked flag in localStorage
   useEffect(() => {
     if (typeof window !== "undefined" && !examStarted && pageLoaded && selectedExam) {
-      // Verificar tanto los logros específicos del examen como los globales
-      const examType = selectedExam || "pmp"
-
-      // Verificar logros específicos del examen
-      const examAchievementUnlocked = localStorage.getItem(`${examType}-achievement-unlocked`)
-      const examAchievementType = localStorage.getItem(`${examType}-achievement-type-unlocked`)
-
-      // Verificar logros globales
-      const globalAchievementUnlocked = localStorage.getItem(`global-achievement-unlocked`)
-      const globalAchievementType = localStorage.getItem(`global-achievement-type-unlocked`)
-
+      const examType = selectedExam || "pmp";
+  
+      const examAchievementUnlocked = localStorage.getItem(`${examType}-achievement-unlocked`);
+      const examAchievementType = localStorage.getItem(`${examType}-achievement-type-unlocked`);
+  
+      const globalAchievementUnlocked = localStorage.getItem(`global-achievement-unlocked`);
+      const globalAchievementType = localStorage.getItem(`global-achievement-type-unlocked`);
+  
       console.log(`[HomePage] Checking achievements for ${examType}:`, {
         examAchievementUnlocked,
         examAchievementType,
         globalAchievementUnlocked,
         globalAchievementType,
-      })
-
+      });
+  
       if (examAchievementUnlocked === "true") {
-        setShouldExpandAchievements(true)
-        setUnlockedAchievementType(examAchievementType)
-
+        setShouldExpandAchievements(true);
+        setUnlockedAchievementType(examAchievementType);
+  
         // Clear the flags after reading them
-        console.log('Removing localStorage items:', `${examType}-achievement-unlocked`, `${examType}-achievement-type-unlocked`);
-        localStorage.removeItem(`${examType}-achievement-unlocked`)
-        localStorage.removeItem(`${examType}-achievement-type-unlocked`)
-
+        localStorage.removeItem(`${examType}-achievement-unlocked`);
+        localStorage.removeItem(`${examType}-achievement-type-unlocked`);
+  
         // Verificar si se han eliminado correctamente
         const achievementUnlocked = localStorage.getItem(`${examType}-achievement-unlocked`);
         const achievementTypeUnlocked = localStorage.getItem(`${examType}-achievement-type-unlocked`);
@@ -135,32 +131,32 @@ export default function Home() {
                 achievementTypeUnlocked,
             });
         }                     
-        
+  
         // Reset after 10 seconds
         const timer = setTimeout(() => {
-          setShouldExpandAchievements(false)
-          setUnlockedAchievementType(null)
-        }, 10000)
-
-        return () => clearTimeout(timer)
+          setShouldExpandAchievements(false);
+          setUnlockedAchievementType(null);
+        }, 10000);
+  
+        return () => clearTimeout(timer);
       } else if (globalAchievementUnlocked === "true") {
-        setShouldExpandAchievements(true)
-        setUnlockedAchievementType(globalAchievementType)
-
+        setShouldExpandAchievements(true);
+        setUnlockedAchievementType(globalAchievementType);
+  
         // Clear the flags after reading them
-        localStorage.removeItem(`global-achievement-unlocked`)
-        localStorage.removeItem(`global-achievement-type-unlocked`)
-
+        localStorage.removeItem(`global-achievement-unlocked`);
+        localStorage.removeItem(`global-achievement-type-unlocked`);
+  
         // Reset after 10 seconds
         const timer = setTimeout(() => {
-          setShouldExpandAchievements(false)
-          setUnlockedAchievementType(null)
-        }, 10000)
-
-        return () => clearTimeout(timer)
+          setShouldExpandAchievements(false);
+          setUnlockedAchievementType(null);
+        }, 10000);
+  
+        return () => clearTimeout(timer);
       }
     }
-  }, [examStarted, pageLoaded, selectedExam])
+  }, [examStarted, pageLoaded, selectedExam]);
 
   const handleStartExam = (count: number, tags: string[], type: string) => {
     // Limpiar cualquier dato de examen anterior de localStorage
