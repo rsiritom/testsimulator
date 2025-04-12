@@ -117,14 +117,14 @@ export default function AchievementCard({ achievement, isNewlyUnlocked, threshol
         {showAnimation && achievement.id === "test-score-threshold" && achievement.isCompleted && (
           <Alert severity="success" sx={{ mb: 2 }}>
             <Typography variant="body2">
-              Congratulations! You've completed 3 tests above your threshold of {threshold}%!
+              ¡Felicidades! ¡Has completado 3 pruebas por encima de tu umbral del {threshold}%!
             </Typography>
           </Alert>
         )}
 
         <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
           <Box sx={{ flexGrow: 1, mr: 1 }}>
-            <Tooltip title={`${Math.round(progress)}% to next level`}>
+            <Tooltip title={`${Math.round(progress)}% al siguiente nivel`}>
               <LinearProgress
                 variant="determinate"
                 value={progress}
