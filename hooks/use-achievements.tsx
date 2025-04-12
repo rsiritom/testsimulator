@@ -96,6 +96,17 @@ export function useAchievements() {
     `${examType}-achievement-score-threshold`,
     defaultTestScoreThreshold,
   )
+  const [testScoreThreshold, setTestScoreThreshold] = useLocalStorage(
+    `${examType}-achievement-score-threshold`,
+    defaultTestScoreThreshold,
+    (initialValue) => {
+      return {
+        ...initialValue,
+        // Mantener isCompleted como true si ya lo era
+        isCompleted: initialValue?.isCompleted || defaultTestScoreThreshold.isCompleted,
+      };
+    }
+  );
 
   // Usar una clave específica para cada tipo de examen para el umbral de puntuación
   const [scoreThreshold, setScoreThreshold] = useLocalStorage(`${examType}-score-threshold`, DEFAULT_THRESHOLD)
@@ -486,9 +497,9 @@ export function useAchievements() {
 
   // Modificar la función updateTestScoreThresholdAchievement para evitar actualizaciones innecesarias
   const updateTestScoreThresholdAchievement = (count: number) => {
-    // Si el contador actual ya es igual al nuevo contador, no hacer nada
-    if (testScoreThreshold.currentCount === count) {
-      return
+    // Si el logro ya estaba completado al cargar, no volver a disparar la lógica de desbloqueo
+    if (testScoreThreshold.isCompleted && testScoreThreshold.currentCount >= 3) {
+      return;
     }
 
     const targetCount = 3
