@@ -257,10 +257,10 @@ export function useAchievements() {
       const testsAboveThreshold = testHistory.filter((test) => test.score >= scoreThreshold).length;
 
       if (process.env.NODE_ENV === "development") {
-		console.log(`Tests above threshold (${scoreThreshold}%):`, testsAboveThreshold);
+        console.log(`Tests above threshold (${scoreThreshold}%):`, testsAboveThreshold);
       }
 
-      updateTestScoreThresholdAchievement(testsAboveThreshold);
+	  updateTestScoreThresholdAchievement(testsAboveThreshold);
     }
   }, [testHistory, scoreThreshold]);
 
@@ -456,3 +456,4 @@ export function useAchievements() {
     updateScoreThreshold,
   };
 }
+	  
