@@ -501,58 +501,51 @@ export function useAchievements() {
       : testScoreThreshold.completedLevels || 0
 
     // Si alcanzamos el objetivo y ya estaba completado, reiniciar a 1
-    const adjustedCount = count > targetCount && testScoreThreshold.isCompleted ? 1 : count
-
-    console.log('Entering to if 2');
-    if (hasLeveledUp || (adjustedCount === 3 && !testScoreThreshold.isCompleted)) {
-      const now = new Date();
-      console.log('Creando en localstorage testScoreThreshold desde use-achievements..', now.toLocaleDateString(), now.toLocaleTimeString());
-      //console.log('Creando en localstorage testScoreThreshold desde use-achievements..'); 
-      setNewlyUnlocked((prev) => [...prev, "testScoreThreshold"])
-
-      setTimeout(() => {
-        setNewlyUnlocked((prev) => prev.filter((id) => id !== "testScoreThreshold"))
-      }, 5000)
-      // Set flag to expand achievements panel when returning to main page
-      localStorage.setItem(`${examType}-achievement-unlocked`, "true")
-      localStorage.setItem(`${examType}-achievement-type-unlocked`, "testScoreThreshold")
-
-    }
-
-    // Update the achievement
-    setTestScoreThreshold({
-      ...testScoreThreshold,
-      currentValue: adjustedCount,
-      currentCount: adjustedCount,
-      currentLevel: hasCompleted ? 1 : 0,
-      isCompleted: hasCompleted,
-      lastUnlocked: hasLeveledUp ? new Date() : testScoreThreshold.lastUnlocked,
-      completedLevels,
-    })
+    // Modificar la función updateTestScoreThresholdAchievement para evitar actualizaciones innecesarias
+const updateTestScoreThresholdAchievement = (count: number) => {
+  // Si el contador actual ya es igual al nuevo contador, no hacer nada
+  if (testScoreThreshold.currentCount === count) {
+    return;
   }
 
-  // Function to update score threshold
-  const updateScoreThreshold = (newThreshold: number) => {
-    // Ensure threshold is between 10 and 100
-    const validThreshold = Math.max(10, Math.min(100, newThreshold))
+  const targetCount = 3;
+  const hasCompleted = count >= targetCount;
+  const hasLeveledUp = hasCompleted && !testScoreThreshold.isCompleted;
 
-    // Only update if the threshold has changed
-    if (validThreshold !== scoreThreshold) {
-      // Update the threshold
-      setScoreThreshold(validThreshold)
+  // Si estamos completando un nivel, incrementar el contador de niveles completados
+  const completedLevels = hasLeveledUp
+    ? (testScoreThreshold.completedLevels || 0) + 1
+    : testScoreThreshold.completedLevels || 0;
 
-      // Reset ONLY the test score threshold achievement
-      setTestScoreThreshold({
-        ...defaultTestScoreThreshold,
-        description: `Complete 3 tests with scores above your target threshold (${validThreshold}%)`,
-        completedLevels: testScoreThreshold.completedLevels || 0, // Mantener los niveles completados
-      })
+  // Si alcanzamos el objetivo y ya estaba completado, reiniciar a 1
+  const adjustedCount = count > targetCount && testScoreThreshold.isCompleted ? 1 : count;
 
-      // Log the threshold change
-      console.log(`Score threshold changed from ${scoreThreshold}% to ${validThreshold}% for ${examType}`)
-      console.log("Score Threshold achievement reset to 0/3")
-    }
+  if (hasLeveledUp || (adjustedCount === 3 && !testScoreThreshold.isCompleted)) {
+    const now = new Date();
+    console.log('Creando en localstorage testScoreThreshold desde use-achievements..', now.toLocaleDateString(), now.toLocaleTimeString());
+
+    setNewlyUnlocked((prev) => [...prev, "testScoreThreshold"]);
+
+    setTimeout(() => {
+      setNewlyUnlocked((prev) => prev.filter((id) => id !== "testScoreThreshold"));
+    }, 5000);
+
+    // Set flag to expand achievements panel when returning to main page
+    localStorage.setItem(`${examType}-achievement-unlocked`, "true");
+    localStorage.setItem(`${examType}-achievement-type-unlocked`, "testScoreThreshold");
   }
+
+  // Update the achievement
+  setTestScoreThreshold({
+    ...testScoreThreshold,
+    currentValue: adjustedCount,
+    currentCount: adjustedCount,
+    currentLevel: hasCompleted ? 1 : 0,
+    isCompleted: hasCompleted,
+    lastUnlocked: hasLeveledUp ? new Date() : testScoreThreshold.lastUnlocked,
+    completedLevels,
+  });
+};
 
   return {
     achievements,
