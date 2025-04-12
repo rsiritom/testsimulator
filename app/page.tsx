@@ -119,6 +119,7 @@ export default function Home() {
         setUnlockedAchievementType(examAchievementType)
 
         // Clear the flags after reading them
+        console.log('Removing localStorage items:', `${examType}-achievement-unlocked`, `${examType}-achievement-type-unlocked`);
         localStorage.removeItem(`${examType}-achievement-unlocked`)
         localStorage.removeItem(`${examType}-achievement-type-unlocked`)
 
