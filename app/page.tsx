@@ -65,7 +65,7 @@ export default function Home() {
       const timer = setTimeout(() => {
         setShouldExpandAchievements(false)
         setUnlockedAchievementType(null)
-      }, 10000)
+      }, 1000)
 
       return () => clearTimeout(timer)
     }
@@ -140,7 +140,7 @@ export default function Home() {
         const timer = setTimeout(() => {
           setShouldExpandAchievements(false)
           setUnlockedAchievementType(null)
-        }, 10000)
+        }, 1000)
 
         return () => clearTimeout(timer)
       } else if (globalAchievementUnlocked === "true") {
@@ -155,7 +155,7 @@ export default function Home() {
         const timer = setTimeout(() => {
           setShouldExpandAchievements(false)
           setUnlockedAchievementType(null)
-        }, 10000)
+        }, 1000)
 
         return () => clearTimeout(timer)
       }
