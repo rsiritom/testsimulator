@@ -33,7 +33,7 @@ export default function AchievementsPanel({
   // Expand the panel when a new achievement is unlocked
   useEffect(() => {
     if (newlyUnlocked.length > 0) {
-      setExpanded(true)
+      setExpanded(false)
     }
   }, [newlyUnlocked])
 
