@@ -429,6 +429,7 @@ export function useAchievements() {
 
   // Function to update daily question streak - ESPECÍFICO PARA CADA EXAMEN
   // Function to update daily question streak - ESPECÍFICO PARA CADA EXAMEN
+  // Function to update daily question streak - ESPECÍFICO PARA CADA EXAMEN
   const updateDailyQuestionStreak = (newValue: number) => {
     // Si el valor actual es 3 y estamos incrementando, significa que completamos un nivel
     const completingLevel = dailyQuestionStreak.currentValue === 3 && newValue > 3
