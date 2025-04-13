@@ -98,30 +98,31 @@ export default function Home() {
     if (typeof window !== "undefined" && !examStarted && pageLoaded && selectedExam) {
       // Verificar tanto los logros específicos del examen como los globales
       const examType = selectedExam || "pmp"
-  
+
       // Verificar logros específicos del examen
       const examAchievementUnlocked = localStorage.getItem(`${examType}-achievement-unlocked`)
       const examAchievementType = localStorage.getItem(`${examType}-achievement-type-unlocked`)
-  
+
       // Verificar logros globales
       const globalAchievementUnlocked = localStorage.getItem(`global-achievement-unlocked`)
       const globalAchievementType = localStorage.getItem(`global-achievement-type-unlocked`)
-  
+
       console.log(`[HomePage] Checking achievements for ${examType}:`, {
         examAchievementUnlocked,
         examAchievementType,
         globalAchievementUnlocked,
         globalAchievementType,
       })
-  
+
       if (examAchievementUnlocked === "true") {
         setShouldExpandAchievements(true)
         setUnlockedAchievementType(examAchievementType)
-  
+
         // Clear the flags after reading them
+        console.log('Removing localStorage items:', `${examType}-achievement-unlocked`, `${examType}-achievement-type-unlocked`);
         localStorage.removeItem(`${examType}-achievement-unlocked`)
         localStorage.removeItem(`${examType}-achievement-type-unlocked`)
-  
+
         // Verificar si se han eliminado correctamente
         const achievementUnlocked = localStorage.getItem(`${examType}-achievement-unlocked`);
         const achievementTypeUnlocked = localStorage.getItem(`${examType}-achievement-type-unlocked`);
@@ -140,43 +141,23 @@ export default function Home() {
           setShouldExpandAchievements(false)
           setUnlockedAchievementType(null)
         }, 10000)
-  
-        // Delay adicional de 12 segundos para borrar las claves nuevamente
-        const additionalDelay = setTimeout(() => {
-          localStorage.removeItem(`${examType}-achievement-unlocked`)
-          localStorage.removeItem(`${examType}-achievement-type-unlocked`)
-          console.log('Additional delay: Items removed again after 12 seconds.');
-        }, 12000)
-  
-        return () => {
-          clearTimeout(timer)
-          clearTimeout(additionalDelay)
-        }
+
+        return () => clearTimeout(timer)
       } else if (globalAchievementUnlocked === "true") {
         setShouldExpandAchievements(true)
         setUnlockedAchievementType(globalAchievementType)
-  
+
         // Clear the flags after reading them
         localStorage.removeItem(`global-achievement-unlocked`)
         localStorage.removeItem(`global-achievement-type-unlocked`)
-  
+
         // Reset after 10 seconds
         const timer = setTimeout(() => {
           setShouldExpandAchievements(false)
           setUnlockedAchievementType(null)
         }, 10000)
-  
-        // Delay adicional de 12 segundos para borrar las claves nuevamente
-        const additionalDelay = setTimeout(() => {
-          localStorage.removeItem(`global-achievement-unlocked`)
-          localStorage.removeItem(`global-achievement-type-unlocked`)
-          console.log('Additional delay: Items removed again after 12 seconds.');
-        }, 12000)
-  
-        return () => {
-          clearTimeout(timer)
-          clearTimeout(additionalDelay)
-        }
+
+        return () => clearTimeout(timer)
       }
     }
   }, [examStarted, pageLoaded, selectedExam])
