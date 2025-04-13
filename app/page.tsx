@@ -94,7 +94,6 @@ export default function Home() {
   // que se manejen correctamente para cada examen
 
   // Check for achievement unlocked flag in localStorage
-  // Check for achievement unlocked flag in localStorage
   useEffect(() => {
     if (typeof window !== "undefined" && !examStarted && pageLoaded && selectedExam) {
       // Verificar tanto los logros específicos del examen como los globales
