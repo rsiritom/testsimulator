@@ -58,7 +58,7 @@ export default function Home() {
   // Check if we should expand achievements panel based on newly unlocked achievements
   useEffect(() => {
     if (newlyUnlocked.length > 0) {
-      setShouldExpandAchievements(true)
+      setShouldExpandAchievements(false)
       setUnlockedAchievementType(newlyUnlocked[0])
 
       // Reset after 10 seconds
@@ -115,7 +115,7 @@ export default function Home() {
       })
 
       if (examAchievementUnlocked === "true") {
-        setShouldExpandAchievements(true)
+        setShouldExpandAchievements(false)
         setUnlockedAchievementType(examAchievementType)
 
         // Clear the flags after reading them
@@ -144,7 +144,7 @@ export default function Home() {
 
         return () => clearTimeout(timer)
       } else if (globalAchievementUnlocked === "true") {
-        setShouldExpandAchievements(true)
+        setShouldExpandAchievements(false)
         setUnlockedAchievementType(globalAchievementType)
 
         // Clear the flags after reading them
