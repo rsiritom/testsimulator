@@ -10,7 +10,7 @@ const ThemeModeContext = createContext({
 
 // Provider component
 export function ThemeModeProvider({ children }) {
-  const [darkMode, setDarkMode] = useState(true)
+  const [darkMode, setDarkMode] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
 
   // Load the theme preference from localStorage on mount
