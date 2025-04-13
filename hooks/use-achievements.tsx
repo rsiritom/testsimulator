@@ -428,22 +428,23 @@ export function useAchievements() {
   }
 
   // Function to update daily question streak - ESPECÍFICO PARA CADA EXAMEN
+  // Function to update daily question streak - ESPECÍFICO PARA CADA EXAMEN
   const updateDailyQuestionStreak = (newValue: number) => {
     // Si el valor actual es 3 y estamos incrementando, significa que completamos un nivel
     const completingLevel = dailyQuestionStreak.currentValue === 3 && newValue > 3
-
+  
     // Si estamos completando un nivel, incrementar el contador de niveles completados
     const completedLevels = completingLevel
       ? (dailyQuestionStreak.completedLevels || 0) + 1
       : dailyQuestionStreak.completedLevels || 0
-
+  
     // Si estamos completando un nivel, reiniciar a 1 en lugar de incrementar
     const adjustedValue = completingLevel ? 1 : newValue
-
+  
     // Find the next level
     let currentLevel = 0
     let nextLevel = ACHIEVEMENT_LEVELS[0]
-
+  
     for (let i = 0; i < ACHIEVEMENT_LEVELS.length; i++) {
       if (adjustedValue >= ACHIEVEMENT_LEVELS[i]) {
         currentLevel = i + 1
@@ -452,26 +453,22 @@ export function useAchievements() {
         break
       }
     }
-
+  
     // Check if we've leveled up
     const hasLeveledUp = currentLevel > dailyQuestionStreak.currentLevel || completingLevel
-
-    console.log('Entering to if...');
-    // If leveled up, add to newly unlocked
+  
     if (hasLeveledUp || (adjustedValue === 3 && !dailyQuestionStreak.isCompleted)) {
-      console.log('Creando en localstorage dailyQuestionStreak desde use-achievements..'); 
       setNewlyUnlocked((prev) => [...prev, "dailyQuestionStreak"])
       // Set flag to expand achievements panel when returning to main page
       localStorage.setItem(`${examType}-achievement-unlocked`, "true")
       localStorage.setItem(`${examType}-achievement-type-unlocked`, "dailyQuestionStreak")
-     
-      
+  
       // After 5 seconds, remove from newly unlocked
       setTimeout(() => {
         setNewlyUnlocked((prev) => prev.filter((id) => id !== "dailyQuestionStreak"))
       }, 5000)
     }
-
+  
     // Update the achievement
     setDailyQuestionStreak({
       ...dailyQuestionStreak,
