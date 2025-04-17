@@ -49,7 +49,6 @@ const fceKnowledgeAreas = [
   "SentenceCompletion",
   "Pronunciation",
   "PhrasalVerbs",
-  "WordOrder",
   "ReportedSpeech",
   "Antonyms",
 ]
