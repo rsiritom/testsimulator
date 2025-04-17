@@ -49,8 +49,6 @@ const fceKnowledgeAreas = [
   "SentenceCompletion",
   "Pronunciation",
   "PhrasalVerbs",
-  "ReportedSpeech",
-  "Antonyms",
 ]
 
 export default function ExamSetup({ onStartExam }) {
